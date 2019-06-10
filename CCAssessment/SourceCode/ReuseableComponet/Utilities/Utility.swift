@@ -500,7 +500,7 @@ class Utility: NSObject {
         let diffHours = diffMinutes/60
     
             
-            dateString = getDateInString(date, format: "yyyy-MM-dd")
+            dateString = getDateInString(date, format: "EEEE")
             
     
         

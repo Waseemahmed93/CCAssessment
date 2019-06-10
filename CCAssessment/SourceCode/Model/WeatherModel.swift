@@ -77,8 +77,8 @@ class WeatherModel: NSObject {
         
         WebServiceApiModel.postRequest(urlString: urlString, controllerView: controllerView, parameter: parameter, controller: controller) { (status, message, dictionary, error) in
             
-            let statusCode = dictionary![JsonParserObject.code] as! NSNumber
-            if statusCode == 200
+            let statusCode = dictionary![JsonParserObject.code] as! String
+            if statusCode == "200"
             {
                 completionHanlder(true,"",dictionary,nil)
             }

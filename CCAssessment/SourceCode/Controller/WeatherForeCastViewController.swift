@@ -22,7 +22,11 @@ class WeatherForeCastViewController: BaseViewController {
     @IBOutlet weak var dayLbl: UILabel!
     @IBOutlet weak var cityLbl: UILabel!
     
-    
+     let itemsPerRow: CGFloat = 3
+     let sectionInsets = UIEdgeInsets(top: 10.0, left: 20.0, bottom: 10.0, right: 20.0)
+    var lat = LocationService.shared.currentLocation.latitude
+    var lon = LocationService.shared.currentLocation.longitude
+    var foreCastData = Array<Any>()
     @IBOutlet weak var weathericon: UIImageView!
     
     
@@ -30,7 +34,7 @@ class WeatherForeCastViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+self.setUpCollectionOptions()
         self.loadWeatherData()
         // Do any additional setup after loading the view.
     }
@@ -38,8 +42,7 @@ class WeatherForeCastViewController: BaseViewController {
 
     func loadWeatherData()
     {
-        let lat = LocationService.shared.currentLocation.latitude
-        let lon = LocationService.shared.currentLocation.longitude
+        
         
         weatherObj.loadWeatherCurrentForecast(urlString: WebServiceApi.weatherCurrent + "appid=\(ThirdPartApiKeys.openWeatherAPIKey)&lat=\(lat)&lon=\(lon)", controllerView: self.view, parameter: ["":"" as AnyObject], controller: self) { (status, message, dictionary, error) in
             
@@ -47,6 +50,7 @@ class WeatherForeCastViewController: BaseViewController {
             {
                 self.weatherObj.getCurrentWeatherObject(weatherObject: dictionary as! [String : Any])
              self.loadData()
+                self.loadForecastData()
             }
         }
     }
@@ -57,7 +61,7 @@ class WeatherForeCastViewController: BaseViewController {
     {
       
         self.cityLbl.text = self.weatherObj.name
-        self.dayLbl.text = Utility.getTimeStamps(byDate: self.weatherObj.dateTime as! Double)
+        self.dayLbl.text = Utility.getTimeStampsForAds(byDate: self.weatherObj.dateTime as! Double)
         self.descbLbl.text = self.weatherObj.descriptn
         self.degreeLbl.text = String(self.weatherObj.deg as! Int)
         self.windLbl.text = "Wind"
@@ -73,7 +77,29 @@ class WeatherForeCastViewController: BaseViewController {
     
     func loadForecastData()
     {
+        weatherObj.loadWeatherForecast(urlString: WebServiceApi.weatherForeCastUrl + "appid=\(ThirdPartApiKeys.openWeatherAPIKey)&lat=\(lat)&lon=\(lon)", controllerView: self.view, parameter: ["":"" as AnyObject], controller: self) { (status, message, dictionary, error) in
+            
+            if status
+            {
+               
+                self.foreCastData = dictionary!["list"] as! Array<Any>
+                self.collectionView.reloadData()
+            }
+        }
+     
+       
+    }
+    
+    func setUpCollectionOptions(){
         
+        
+        
+        let nibCell = UINib(nibName: WeatherForeCastCollectionViewCell.nameOfClass(), bundle: nil)
+        collectionView.register(nibCell, forCellWithReuseIdentifier: WeatherForeCastCollectionViewCell.nameOfClass())
+        if let flowLayout = collectionView.setCollectionViewLayout as? UICollectionViewFlowLayout
+        {
+            flowLayout.estimatedItemSize = CGSize(width: 100, height: 100)
+        }
     }
     
     /*
@@ -88,17 +114,44 @@ class WeatherForeCastViewController: BaseViewController {
 
 }
 
-extension WeatherForeCastViewController:UICollectionViewDelegate,UICollectionViewDataSource{
+extension WeatherForeCastViewController:UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return foreCastData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         
+    
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WeatherForeCastCollectionViewCell", for: indexPath) as! WeatherForeCastCollectionViewCell
+        cell.setWeatherForeCastData(data: foreCastData[indexPath.row] as! Dictionary<String,Any>)
         return cell
     }
     
-    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+        //2
+        let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
+        let availableWidth = view.frame.width - paddingSpace
+        let widthPerItem = availableWidth / itemsPerRow
+
+
+        return CGSize(width: widthPerItem, height: widthPerItem + 20)
+    }
+
+    //3
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        return sectionInsets
+    }
+
+    // 4
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return sectionInsets.left
+    }
 }

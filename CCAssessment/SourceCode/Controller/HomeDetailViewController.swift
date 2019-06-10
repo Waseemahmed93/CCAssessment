@@ -13,25 +13,12 @@ class HomeDetailViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.loadWeatherData()
-        LocationService.shared.startTrackingLocation()
+       
         // Do any additional setup after loading the view.
     }
     
     
-    func loadWeatherData()
-    {
-        //https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=1500&type=restaurant&keyword=cruise&key=YOUR_API_KEY
-       
-        WebServiceApiModel.postRequestGoogleApi(urlString:"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=\(LocationService.shared.currentLocation.latitude),\(LocationService.shared.currentLocation.longitude)&radius=150000&type=restaurant&keyword=cruise&key=AIzaSyBTOTeRRHPO83OxrscCrTtlU-I5BD1t-_Y" , controllerView: self.view, parameter: ["":"" as AnyObject], controller: self) { (status, message, dictionary, error) in
-            
-                if status
-                {
-                    
-                }
-                print("mee")
-            }
-        }
+
     
 
     /*

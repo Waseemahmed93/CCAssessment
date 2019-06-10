@@ -18,7 +18,7 @@ struct WebServiceApiModel {
     
     static func postRequestGoogleApi(urlString:String,controllerView:UIView,parameter:[String:AnyObject],controller : UIViewController,completionHanlder:@escaping (Bool,String,NSDictionary?, NSError?) -> ())
     {
-        WebServices.sharedInstance.sendRequestToServer(urlString: urlString, methodType: .post, param: parameter) { (object, response, status, error) in
+        WebServices.sharedInstance.sendRequestToServer(urlString: urlString, methodType: .post, param: parameter, controllerView: controllerView) { (object, response, status, error) in
             if error == nil
             {
                 //     print("object",object as Any)
@@ -36,7 +36,7 @@ struct WebServiceApiModel {
     
     static func postRequest(urlString:String,controllerView:UIView,parameter:[String:AnyObject],controller : UIViewController,completionHanlder:@escaping (Bool,String,NSDictionary?, NSError?) -> ())
     {
-        WebServices.sharedInstance.sendRequestToOpenMapWeather(urlString: urlString, methodType: .post, param: parameter) { (object, response, status, error) in
+        WebServices.sharedInstance.sendRequestToOpenMapWeather(urlString: urlString, methodType: .post, param: parameter, controllerView: controllerView) { (object, response, status, error) in
             if error == nil
             {
              //     print("object",object as Any)
